@@ -102,3 +102,35 @@ DSM5_score
 # Korean
 # Traget population
 # ngram
+
+##############################################
+# regression
+##############################################
+
+note2 <- note %>% select(note_id, person_id.x, visit_start_date, visit_end_date)
+names(note2)[names(note2)=='person_id.x']='person_id'
+note2$visit_start_date <- as.Date(note2$visit_start_date)
+note2$visit_end_date <- as.Date(note2$visit_end_date)
+
+##length of stay
+note2$los <- note2$visit_end_date-note2$visit_start_date
+temp <- note2 %>% select(visit_start_date, visit_end_date, los)
+View(temp)
+
+note3 <- cbind(DSM5_score, note2)
+length(note3$note_id)
+rownames(note3) <- for(i in 1:length(note3$note_id)){
+  print(c(i))
+} 
+
+note3$los <- as.numeric(note3$los)
+
+model_1 = lm(los ~ positive_score+negative_score+cognitive_score+social_score+arousal_regulatory_score, data = note3)
+
+summary(model_1)
+
+##covariate: sex,age,CCI score
+##cox regression ?
+
+
+
